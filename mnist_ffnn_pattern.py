@@ -22,7 +22,7 @@ IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE
 
 
 def weight_variable(shape, stddev):
-    initial = tf.truncated_normal(shape=shape, stddev=stddev)
+    initial = tf.truncated_normal(shape, stddev=stddev)
     return tf.Variable(initial, name="weights")
 
 
@@ -81,13 +81,13 @@ def loss(logits, labels):
 
     Args:
         logits: logits tensor, float - [batch_size, NUM_CLASSES].
-        labels: labels tensor, int32 - [batch_size]
+        labels: labels tensor, int32 - [batch_size].
 
     Returns:
         loss: Loss tensor of type float.
 
     """
-    labels = tf.to_int64(labels)
+    labels=tf.to_int64(labels)
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
         labels=labels, logits=logits, name="xentropy")
     loss = tf.reduce_mean(cross_entropy, name="xentropy_mean")
@@ -141,7 +141,6 @@ def evaluation(logits, labels):
     # It returns a bool tensor with shape [batch_size] that is true for
     # the examples where the label is the top k (here k=1)
     # of all logits for the example.
-    targets=[tf.cast(l,tf.int32) for l in logits]
-    correct = tf.nn.in_top_k(targets, labels, 1)
+    correct = tf.nn.in_top_k(logits, labels, 1)
     # return the number of true entries
     return tf.reduce_sum(tf.cast(correct, tf.int32))
